@@ -1,34 +1,30 @@
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./AddUser.module.css";
 import Button from "./UI/Button";
 import Error from "./UI/Error";
 import Card from "./UI/Card";
 
 const AddUser = (props) => {
-  const [userInput, setUserInput] = useState("");
-  const [ageInput, setAgeInput] = useState("");
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+
   const [idCounter, setIdCounter] = useState(0);
   const [error, setError] = useState(null);
-
-  const usernameChangeHandler = (event) => {
-    setUserInput(event.target.value);
-  };
-
-  const ageChangeHandler = (event) => {
-    setAgeInput(event.target.value);
-  };
 
   const errorHandler = (event) => {
     event.preventDefault();
 
-    setUserInput('');
-    setAgeInput('');
+    nameInputRef.current.value = '';
+    ageInputRef.current.value = '';
 
     setError(null);
   };
 
   const formSumbitHandler = (form) => {
     form.preventDefault();
+
+    const userInput = nameInputRef.current.value;
+    const ageInput = ageInputRef.current.value;
 
     if (userInput.trim().length === 0) {
       setError({
@@ -62,28 +58,28 @@ const AddUser = (props) => {
 
     props.onAddUser(newUser);
 
-    setUserInput("");
-    setAgeInput("");
+    nameInputRef.current.value = '';
+    ageInputRef.current.value = '';
   };
 
   return (
-    <div>
+    <React.Fragment>
       {error && (
         <Error title={error.title} msg={error.msg} onConfirm={errorHandler} />
       )}
       <Card className={styles.input}>
         <form onSubmit={formSumbitHandler}>
-          <div>Username</div>
+          <label htmlFor="username">Username</label>
           <input
+            id = "username"
             type="text"
-            value={userInput}
-            onChange={usernameChangeHandler}
+            ref={nameInputRef}
           ></input>
-          <div>Age (years)</div>
+          <label htmlFor="age">Age (years)</label>
           <input
+            id = "age"
             type="number"
-            value={ageInput}
-            onChange={ageChangeHandler}
+            ref={ageInputRef}
           ></input>
           <div>
             <Button type="sumbit" onFormSumbit={formSumbitHandler}>
@@ -92,7 +88,7 @@ const AddUser = (props) => {
           </div>
         </form>
       </Card>
-    </div>
+    </React.Fragment>
   );
 };
 
